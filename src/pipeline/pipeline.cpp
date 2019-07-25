@@ -64,20 +64,7 @@ namespace librealsense
             }
             else
             {
-                const int NUM_TIMES_TO_RETRY = 3;
-                for (int i = 1; i <= NUM_TIMES_TO_RETRY; i++)
-                {
-                    try
-                    {
-                        profile = conf->resolve(shared_from_this(), std::chrono::seconds(5));
-                        break;
-                    }
-                    catch (...)
-                    {
-                        if (i == NUM_TIMES_TO_RETRY)
-                            throw;
-                    }
-                }
+                profile = conf->resolve(shared_from_this());
             }
 
             assert(profile);

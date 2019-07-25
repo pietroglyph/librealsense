@@ -123,13 +123,16 @@ namespace librealsense
             return std::make_shared<profile>(dev, config, _device_request.record_output);
         }
 
-        std::shared_ptr<profile> config::resolve(std::shared_ptr<pipeline> pipe, const std::chrono::milliseconds& timeout)
+        std::shared_ptr<profile> config::resolve(std::shared_ptr<pipeline> pipe)
         {
+            const auto TIMEOUT = std::chrono::seconds(5);
+            const int NUM_TIMES_TO_RETRY = 3;
+
             std::lock_guard<std::mutex> lock(_mtx);
             _resolved_profile.reset();
 
             //Resolve the the device that was specified by the user, this call will wait in case the device is not availabe.
-            auto requested_device = resolve_device_requests(pipe, timeout);
+            auto requested_device = resolve_device_requests(pipe, TIMEOUT);
             if (requested_device != nullptr)
             {
                 _resolved_profile = resolve(requested_device);
@@ -153,7 +156,20 @@ namespace librealsense
             }
 
             //If no device found wait for one
-            auto dev = pipe->wait_for_device(timeout);
+            std::shared_ptr<device_interface> dev;
+            for (int i = 1; i <= NUM_TIMES_TO_RETRY; i++)
+            {
+                try
+                {
+                    dev = pipe->wait_for_device(TIMEOUT);
+                    break;
+                }
+                catch (...)
+                {
+                    if (i == NUM_TIMES_TO_RETRY)
+                        throw;
+                }
+            }
             if (dev != nullptr)
             {
                 _resolved_profile = resolve(dev);

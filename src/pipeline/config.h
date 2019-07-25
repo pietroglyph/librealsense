@@ -26,7 +26,7 @@ namespace librealsense
             void enable_record_to_file(const std::string& file);
             void disable_stream(rs2_stream stream, int index = -1);
             void disable_all_streams();
-            std::shared_ptr<profile> resolve(std::shared_ptr<pipeline> pipe, const std::chrono::milliseconds& timeout = std::chrono::milliseconds(0));
+            std::shared_ptr<profile> resolve(std::shared_ptr<pipeline> pipe);
             bool can_resolve(std::shared_ptr<pipeline> pipe);
             bool get_repeat_playback();
 
