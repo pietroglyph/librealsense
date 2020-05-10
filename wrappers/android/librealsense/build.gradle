@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 26
@@ -7,7 +8,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
-        versionName "1.0"
+        versionName "2.34.6-ftc265"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -15,6 +16,12 @@ android {
             cmake {
                 arguments "-DFORCE_RSUSB_BACKEND=TRUE"
             }
+        }
+
+        ndk {
+            // Specifies the ABI configurations of your native
+            // libraries Gradle should build and package with your APK.
+            abiFilters 'armeabi-v7a'
         }
     }
 
@@ -41,4 +48,18 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                groupId = "com.intel.realsense"
+                artifactId "librealsense"
+                version = android.defaultConfig.versionName
+                artifact("$buildDir/outputs/aar/${project.getName()}.aar")
+            }
+        }
+    }
 }
