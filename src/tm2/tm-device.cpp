@@ -25,6 +25,10 @@ using namespace std::chrono;
 #include <libkern/OSByteOrder.h>
 #define htobe64(x) OSSwapHostToBigInt64(x)
 
+#elif defined(__linux__)
+
+#include <endian.h>
+
 #endif
 
 static uint64_t bytesSwap(uint64_t val)
