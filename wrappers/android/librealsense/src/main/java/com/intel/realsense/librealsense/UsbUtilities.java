@@ -17,14 +17,37 @@ public class UsbUtilities {
     private static final String TAG = "librs UsbUtilities";
     public static final String ACTION_USB_PERMISSION = "USB_CONTROL_PERMISSION";
 
-    public static boolean isIntel(UsbDevice usbDevice){
-        if (usbDevice.getVendorId() == 0x8086)
-            return true;
-        return false;
+    // These PID/VIDs probably only work for non-T200 devices
+    private final static int INTEL_VENDOR_ID = 0x8086;
+    private final static int INTEL_PRODUCT_ID = 0x0;
+    // My T265 only shows with the below VID/PID combo
+    private final static int INTEL_RS_VENDOR_ID = 0x8087;
+    private final static int INTEL_RS_PRODUCT_ID = 0x0B37;
+    // Legacy PID/VIDs... For some reason devices can sometimes get "downgraded"
+    private final static int MOVIDIUS_VENDOR_ID = 0x03E7;
+    private final static int MOVIDIUS_PRODUCT_ID = 0x2150;
+
+    public static boolean isIntel(UsbDevice usbDevice) {
+        return usbDevice.getVendorId() == INTEL_VENDOR_ID
+                || usbDevice.getVendorId() == INTEL_RS_VENDOR_ID
+                || usbDevice.getVendorId() == MOVIDIUS_VENDOR_ID;
     }
 
     private static List<UsbDevice> getUsbDevices(Context context, Integer vId) {
-        return getUsbDevices(context, vId, 0);
+        List<UsbDevice> res = null;
+        switch (vId) {
+            case INTEL_VENDOR_ID:
+                res = getUsbDevices(context, INTEL_VENDOR_ID, INTEL_PRODUCT_ID);
+                break;
+            case INTEL_RS_VENDOR_ID:
+                res = getUsbDevices(context, INTEL_RS_VENDOR_ID, INTEL_RS_PRODUCT_ID);
+                break;
+            case MOVIDIUS_VENDOR_ID:
+                res = getUsbDevices(context, MOVIDIUS_VENDOR_ID, MOVIDIUS_PRODUCT_ID);
+                break;
+        }
+
+        return res;
     }
 
     private static List<UsbDevice> getUsbDevices(Context context, Integer vId, Integer pId) {
@@ -74,7 +97,21 @@ public class UsbUtilities {
     }
 
     private static List<UsbDevice> getDevices(Context context) {
-        return getUsbDevices(context, 0x8086);
+        List<UsbDevice> res = new ArrayList<>();
+
+        List<UsbDevice> resIntel = getUsbDevices(context, INTEL_VENDOR_ID);
+        if(resIntel != null)
+            res.addAll(resIntel);
+
+        List<UsbDevice> resIntelRs = getUsbDevices(context, INTEL_RS_VENDOR_ID);
+        if(resIntelRs != null)
+            res.addAll(resIntelRs);
+
+        List<UsbDevice> resMovidius = getUsbDevices(context, MOVIDIUS_VENDOR_ID);
+        if(resMovidius != null)
+            res.addAll(resMovidius);
+
+        return res;
     }
 
     public static void grantUsbPermissionIfNeeded(Context context) {
