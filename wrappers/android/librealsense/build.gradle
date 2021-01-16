@@ -8,7 +8,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
-        versionName "2.34.0-ftc265"
+        versionName "2.41.0-ftc265"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
