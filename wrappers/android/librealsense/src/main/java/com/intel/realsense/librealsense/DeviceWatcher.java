@@ -9,6 +9,7 @@ import android.hardware.usb.UsbManager;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -52,10 +53,10 @@ class DeviceWatcher extends LrsClass {
         }
     };
 
-    DeviceWatcher(Context context){
+    DeviceWatcher(Context context, DeviceListener[] initialListeners) {
         mContext = context;
+        mAppDeviceListener = new ArrayList<>(Arrays.asList(initialListeners));
         mEnumerator = new Enumerator(mContext, mListener);
-        mAppDeviceListener = new ArrayList<>();
     }
 
     private synchronized void invalidateDevices() {

@@ -6,9 +6,9 @@ public class RsContext extends LrsClass{
     private static DeviceWatcher mDeviceWatcher;
     private DeviceListener mListener;
 
-    public static void init(Context context){
+    public static void init(Context context, DeviceListener... initialListeners){
         if(mDeviceWatcher == null)
-            mDeviceWatcher = new DeviceWatcher(context);
+            mDeviceWatcher = new DeviceWatcher(context, initialListeners);
     }
 
     public static String getVersion(){
